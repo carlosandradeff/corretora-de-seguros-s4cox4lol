@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { DownloadPageButton } from '@/components/DownloadPageButton'
 import { BrandLogo } from '@/components/BrandLogo'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { insurances } from '@/data/insurances'
@@ -262,9 +263,12 @@ export default function Layout() {
           </div>
         </div>
         <div className="border-t border-white/10">
-          <div className="page-shell flex flex-col gap-2 py-5 text-xs text-blue-300 sm:flex-row sm:items-center sm:justify-between">
+          <div className="page-shell flex flex-col gap-3 py-5 text-xs text-blue-300 sm:flex-row sm:items-center sm:justify-between">
             <p>© 2026 Stop Seguros — Corretora de Seguros</p>
-            <p>{company.cnpj}</p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
+              <p>{company.cnpj}</p>
+              <DownloadPageButton />
+            </div>
           </div>
         </div>
       </footer>
