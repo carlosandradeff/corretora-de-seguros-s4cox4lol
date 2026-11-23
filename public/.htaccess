@@ -1,0 +1,20 @@
+# Hospedagem Apache (cPanel/FTP): mapeia as rotas do site para os HTML pré-renderizados.
+RewriteEngine On
+RewriteBase /
+
+# 1. Arquivos e pastas que existem são servidos diretamente (ex.: /assets/...)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 2. Artigos do blog: /blog/slug -> blog-slug.html, quando o arquivo existir
+RewriteCond %{REQUEST_URI} ^/blog/([^/]+)/?$
+RewriteCond %{DOCUMENT_ROOT}/blog-%1.html -f
+RewriteRule ^ blog-%1.html [L]
+
+# 3. Demais páginas: /sobre -> sobre.html, quando o arquivo existir
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^([^/]+)/?$ $1.html [L]
+
+# 4. Qualquer outra rota cai no index.html (SPA renderiza no navegador)
+RewriteRule ^ index.html [L]
