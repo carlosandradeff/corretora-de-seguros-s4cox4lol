@@ -99,7 +99,7 @@ function collectCssomCss(sourceDoc: Document): string {
     }
   }
 
-  const readAll = (list: CSSStyleSheetList | CSSStyleSheet[] | undefined): void => {
+  const readAll = (list: StyleSheetList | CSSStyleSheet[] | undefined): void => {
     if (!list) return
     Array.from(list as ArrayLike<CSSStyleSheet>).forEach(readSheet)
   }
