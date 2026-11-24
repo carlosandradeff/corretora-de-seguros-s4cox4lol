@@ -21,6 +21,10 @@ export const STANDALONE_CSS = `
 .sx-success h3{margin-top:1.25rem;font-size:1.5rem;font-weight:800;color:#0A2E6E}
 .sx-success p{margin-top:.75rem;max-width:28rem;line-height:1.75;color:#5A6B85}
 .sx-success a{margin-top:1rem;color:#1565D8;font-weight:700;text-decoration:underline}
+/* Placeholder de imagem (o export não embute imagens): reserva o mesmo box da imagem */
+.sx-img-placeholder{display:flex;align-items:center;justify-content:center;background:#EAF2FD;color:#8FA9CE;overflow:hidden}
+.sx-img-placeholder::before{content:"Imagem";font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.sx-img-placeholder[aria-label=""]::before,.sx-img-placeholder:not([aria-label])::before{content:""}
 `
 
 /** Comportamento do arquivo exportado (JS puro, sem dependências).

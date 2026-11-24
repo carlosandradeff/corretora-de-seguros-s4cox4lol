@@ -1,7 +1,9 @@
 import { captureLiveState } from '@/lib/standalone/captureLiveState'
 import { prepareStandaloneDom } from '@/lib/standalone/transformDom'
 
-/** Gera o HTML5 autossuficiente da página atual: CSS, imagens e JavaScript embutidos. */
+/** Gera o HTML5 autossuficiente da página atual: CSS e JavaScript embutidos.
+ *  As imagens NÃO são embutidas: cada <img> vira um placeholder (bloco cinza com o
+ *  rótulo "Imagem") nas mesmas dimensões da imagem original. */
 export async function buildStandaloneHtml(): Promise<string> {
   // Antes de clonar: captura o estado que só existe no React (FAQ e depoimentos)
   const snapshot = await captureLiveState()
@@ -31,8 +33,8 @@ export async function buildStandaloneHtml(): Promise<string> {
     }),
   )
 
-  // Embute as imagens remotas como data URI (best-effort: se o CDN bloquear, mantém a URL)
-  await inlineImages(doc)
+  // Substitui cada imagem por um placeholder com as mesmas dimensões (nada é embutido)
+  replaceImagesWithPlaceholders(doc)
 
   prepareStandaloneDom(doc, snapshot)
 
@@ -72,26 +74,60 @@ async function fetchCss(href: string): Promise<string> {
   return css
 }
 
-async function inlineImages(doc: Document): Promise<void> {
-  const images = Array.from(doc.querySelectorAll<HTMLImageElement>('img[src^="http"]'))
-  await Promise.all(
-    images.map(async (img) => {
-      try {
-        const response = await fetch(img.getAttribute('src') ?? '')
-        if (!response.ok) return
-        const dataUrl = await blobToDataUrl(await response.blob())
-        img.setAttribute('src', dataUrl)
-      } catch {
-        // mantém a URL remota
-      }
-    }),
-  )
+/** Troca cada <img> (e cada background-image de CSS embutido) por um bloco cinza reservado,
+ *  com largura/altura/aspect-ratio e classes preservadas, mantendo o layout idêntico.
+ *  Nunca baixa nem embute bytes de imagem: o arquivo fica leve e funciona offline. */
+export function replaceImagesWithPlaceholders(doc: Document): void {
+  const images = Array.from(doc.querySelectorAll('img'))
+  for (const img of images) {
+    const placeholder = doc.createElement('div')
+    placeholder.className = img.className
+    placeholder.setAttribute('data-sx-image', '')
+    placeholder.setAttribute('role', 'img')
+    placeholder.setAttribute('aria-label', img.getAttribute('alt') || 'Imagem')
+    placeholder.classList.add('sx-img-placeholder')
+
+    // Preserva o box da imagem: classes (aspect-[..], w-*, h-*), width/height e aspect-ratio
+    const width = img.getAttribute('width')
+    const height = img.getAttribute('height')
+    if (width) placeholder.setAttribute('data-sx-width', width)
+    if (height) placeholder.setAttribute('data-sx-height', height)
+    if (!width && !height) {
+      const ratio = ratioFrom(img)
+      if (ratio) placeholder.style.aspectRatio = ratio
+    }
+
+    // Filhos inline (ex.: legenda/overlay simples) permanecem dentro do reservado
+    if (img.childElementCount > 0) {
+      placeholder.innerHTML = img.innerHTML
+    }
+
+    img.replaceWith(placeholder)
+  }
+
+  // background-image em CSS embutido (não há nenhum hoje; cobre estilos inline futuros)
+  doc.querySelectorAll<HTMLElement>('[style*="background-image"]').forEach((el) => {
+    const style = el.getAttribute('style') ?? ''
+    el.setAttribute(
+      'style',
+      style.replace(
+        /background-image\s*:[^;"]*(;?)/g,
+        (_full, semi) => `background-image:none${semi}`,
+      ),
+    )
+  })
 }
 
-const blobToDataUrl = (blob: Blob) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result))
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(blob)
-  })
+/** Deduz a proporção da imagem. Todas as imagens do site vêm do CDN de imagens
+ *  (img.usecurling.com/p/LARGURA/ALTURA), então a URL carrega as dimensões exatas
+ *  com que foram pedidas — e é a única fonte confiável no clone do DOM.
+ *  Ex.: /p/1000/1100 → "1000 / 1100". */
+function ratioFrom(img: HTMLImageElement): string | null {
+  const src = img.getAttribute('src') ?? img.getAttribute('data-src') ?? ''
+  const match = src.match(/\/p\/(\d+)\/(\d+)/)
+  if (match) return `${match[1]} / ${match[2]}`
+  if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+    return `${img.naturalWidth} / ${img.naturalHeight}`
+  }
+  return null
+}
