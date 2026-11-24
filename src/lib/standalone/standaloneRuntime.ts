@@ -140,7 +140,7 @@ export const STANDALONE_JS = `
 
   // Formulários: validação local e confirmação. O envio real só acontece no site publicado.
   var formatPhone = function (value) {
-    var digits = value.replace(/D/g, '').slice(0, 11);
+    var digits = value.replace(/\\D/g, '').slice(0, 11);
     if (digits.length <= 2) return digits;
     if (digits.length <= 6) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2);
     if (digits.length <= 10) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);

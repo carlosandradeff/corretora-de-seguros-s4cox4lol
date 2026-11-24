@@ -1,12 +1,21 @@
 import { captureLiveState } from '@/lib/standalone/captureLiveState'
 import { prepareStandaloneDom } from '@/lib/standalone/transformDom'
 
-/** Gera o HTML5 autossuficiente da página atual: CSS e JavaScript embutidos.
- *  As imagens NÃO são embutidas: cada <img> vira um placeholder (bloco cinza com o
- *  rótulo "Imagem") nas mesmas dimensões da imagem original. */
+/**
+ * Gera o HTML5 autossuficiente da página atual: CSS e JavaScript embutidos.
+ * As imagens NÃO são embutidas: cada <img> vira um placeholder (bloco cinza com o
+ * rótulo "Imagem") nas mesmas dimensões da imagem original.
+ *
+ * O CSS é lido da CSSOM (document.styleSheets + adoptedStyleSheets + shadowRoots),
+ * porque o Tailwind via Vite injeta os estilos em Constructable Stylesheets, que
+ * não aparecem como elementos <style>/<link> no DOM.
+ */
 export async function buildStandaloneHtml(): Promise<string> {
   // Antes de clonar: captura o estado que só existe no React (FAQ e depoimentos)
   const snapshot = await captureLiveState()
+
+  // CSS da CSSOM da página VIVA (antes do clone, que não carrega stylesheets)
+  const cssomCss = collectCssomCss(document)
 
   const doc = document.cloneNode(true) as Document
   const root = doc.documentElement
@@ -18,15 +27,15 @@ export async function buildStandaloneHtml(): Promise<string> {
     root.insertBefore(meta, root.firstChild)
   }
 
-  // Embute os CSS locais como <style> (best-effort: mantém o <link> se falhar)
+  // Embute folhas <link rel="stylesheet"> por fetch (com @import e url() resolvidos).
+  // Best-effort: se o fetch falhar, o CSS da CSSOM já cobre a folha processada.
   const stylesheets = Array.from(doc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
   await Promise.all(
     stylesheets.map(async (linkEl) => {
       try {
         const css = await fetchCss(linkEl.href)
-        const style = doc.createElement('style')
-        style.textContent = css
-        linkEl.replaceWith(style)
+        insertStyle(doc, css)
+        linkEl.remove()
       } catch {
         // mantém o <link> original
       }
@@ -38,7 +47,114 @@ export async function buildStandaloneHtml(): Promise<string> {
 
   prepareStandaloneDom(doc, snapshot)
 
+  // CSS da página (CSSOM + links) vai ANTES dos overrides do runtime standalone
+  if (cssomCss.trim()) {
+    insertStyle(doc, cssomCss)
+  }
+
+  // Sanidade: o CSS embutido precisa cobrir as classes usadas no HTML exportado
+  verifyCssCoverage(doc)
+
   return '<!doctype html>\n' + root.outerHTML
+}
+
+/** Cria um <style> no <head> do clone, DEPOIS dos <link> (fontes) já presentes. */
+function insertStyle(doc: Document, css: string): void {
+  const style = doc.createElement('style')
+  style.setAttribute('data-sx-export', '')
+  style.textContent = css
+  const head = doc.head
+  // Insere após o último <link>/<style> existente, para preservar a ordem das fontes
+  const lastSheet = Array.from(head.querySelectorAll('link, style')).pop()
+  if (lastSheet) {
+    lastSheet.insertAdjacentElement('afterend', style)
+  } else {
+    head.appendChild(style)
+  }
+}
+
+/**
+ * Serializa as regras de todas as stylesheets vivas da página: document.styleSheets
+ * (inclui as injetadas pelo Vite/Tailwind) e document.adoptedStyleSheets (constructable),
+ * além de shadowRoots abertos. try/catch por folha: folhas de outro origin (CORS)
+ * lançam ao acessar cssRules e são ignoradas.
+ */
+function collectCssomCss(sourceDoc: Document): string {
+  const chunks: string[] = []
+  const seen = new WeakSet<CSSStyleSheet>()
+
+  const readSheet = (sheet: CSSStyleSheet): void => {
+    if (seen.has(sheet)) return
+    seen.add(sheet)
+    try {
+      const rules = sheet.cssRules
+      if (!rules || rules.length === 0) return
+      chunks.push(
+        Array.from(rules)
+          .map((rule) => rule.cssText)
+          .join('\n'),
+      )
+    } catch {
+      // SecurityError de CORS: a folha não pode ser lida aqui
+    }
+  }
+
+  const readAll = (list: CSSStyleSheetList | CSSStyleSheet[] | undefined): void => {
+    if (!list) return
+    Array.from(list as ArrayLike<CSSStyleSheet>).forEach(readSheet)
+  }
+
+  readAll(sourceDoc.styleSheets)
+  readAll((sourceDoc as Document & { adoptedStyleSheets?: CSSStyleSheet[] }).adoptedStyleSheets)
+
+  // ShadowRoots abertos (componentes web, se houver)
+  const walk = (node: Node): void => {
+    const shadow = (node as Element).shadowRoot as ShadowRoot | null | undefined
+    if (shadow) {
+      readAll(shadow.adoptedStyleSheets)
+      Array.from(shadow.querySelectorAll('style')).forEach((styleEl) => {
+        const text = styleEl.textContent ?? ''
+        if (text.trim()) chunks.push(text)
+      })
+    }
+    Array.from(node.childNodes).forEach(walk)
+  }
+  walk(sourceDoc.documentElement)
+
+  return chunks.filter(Boolean).join('\n')
+}
+
+/** Verificação de publicação: o CSS embutido precisa cobrir as classes do HTML exportado.
+ *  Confere as 40 classes mais frequentes do DOM; faltando ≥ 2 delas, o export é inválido. */
+function verifyCssCoverage(doc: Document): void {
+  const pageCss = Array.from(doc.head.querySelectorAll('style[data-sx-export]'))
+    .map((el) => el.textContent ?? '')
+    .join('\n')
+
+  const classCount = new Map<string, number>()
+  doc.querySelectorAll('[class]').forEach((el) => {
+    el.classList.forEach((cls) => {
+      // O runtime standalone usa classes próprias (.sx-*), já cobertas por STANDALONE_CSS
+      if (cls.startsWith('sx-') || cls.startsWith('lucide')) return
+      classCount.set(cls, (classCount.get(cls) ?? 0) + 1)
+    })
+  })
+
+  const missing = Array.from(classCount.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 40)
+    .filter(([cls]) => !pageCss.includes(cls))
+    .map(([cls]) => cls)
+
+  if (missing.length >= 2) {
+    console.error(
+      `[export standalone] CSS embutido não cobre ${missing.length} classes principais: ` +
+        missing.slice(0, 10).join(', '),
+    )
+    throw new Error(
+      'Export cancelado: o CSS embutido está incompleto. Recarregue a página e tente de novo.',
+    )
+  }
 }
 
 /** Busca o CSS da folha de estilo, resolvendo @import e corrigindo URLs relativas. */
