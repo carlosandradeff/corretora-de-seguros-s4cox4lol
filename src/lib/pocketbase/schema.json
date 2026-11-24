@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-23T15:45:11.959Z",
+  "generatedAt": "2026-11-24T11:43:17.402Z",
   "collections": [
     {
       "name": "users",
@@ -29,14 +29,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
@@ -78,7 +83,15 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["auto", "residencial", "vida", "saude", "empresarial", "viagem", "outro"]
+          "selectValues": [
+            "auto",
+            "residencial",
+            "vida",
+            "saude",
+            "empresarial",
+            "viagem",
+            "outro"
+          ]
         },
         {
           "name": "message",
@@ -91,21 +104,31 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["novo", "contato_feito", "convertido", "descartado"]
+          "selectValues": [
+            "novo",
+            "contato_feito",
+            "convertido",
+            "descartado"
+          ]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
