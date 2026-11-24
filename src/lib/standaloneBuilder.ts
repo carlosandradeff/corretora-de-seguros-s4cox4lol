@@ -140,10 +140,13 @@ function verifyCssCoverage(doc: Document): void {
     })
   })
 
+  // Seletores no CSS vêm com escape (ex.: ".sm\:text-5xl", ".text-\[\#0A2E6E\]"),
+  // então a busca usa o nome da classe escapado, não o texto cru.
+  const escapeClass = (cls: string) => cls.replace(/([^\w-])/g, '\\$1')
   const missing = Array.from(classCount.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 40)
-    .filter(([cls]) => !pageCss.includes(cls))
+    .filter(([cls]) => !pageCss.includes(`.${escapeClass(cls)}`))
     .map(([cls]) => cls)
 
   if (missing.length >= 2) {
