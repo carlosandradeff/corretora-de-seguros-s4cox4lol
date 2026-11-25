@@ -1,0 +1,1230 @@
+/* ==========================================================================
+   STOP SEGUROS — CSS TRADICIONAL
+   Versão estática escrita à mão do site da corretora.
+   Paleta: azul-marinho #0A2E6E (marca), azul médio #1565D8 (ação),
+   fundo suave #F4F8FE, texto secundário #5A6B85, WhatsApp #25D366.
+   Tipografia: Sora (Google Fonts), mesma do site oficial.
+   --------------------------------------------------------------------------
+   ÍNDICE
+   01. Reset e base
+   02. Variáveis de cor e tipografia
+   03. Utilitários de layout (page-shell, section-space, soft-card)
+   04. Botões
+   05. Header e navegação
+   06. Hero / banners de página
+   07. Seções comuns (títulos, checklists, FAQ, CTA)
+   08. Cards de seguro
+   09. Depoimentos / carrossel
+   10. Formulário de cotação
+   11. Página de contato
+   12. Artigos do blog
+   13. Rodapé
+   14. Botão flutuante de WhatsApp
+   15. Animações
+   16. Responsivo (media queries)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01. RESET E BASE
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Sora', 'Segoe UI', Tahoma, sans-serif;
+  color: #52627a;
+  background-color: #ffffff;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: #1565d8;
+  text-decoration: none;
+}
+
+ul[class],
+ol[class] {
+  list-style: none;
+}
+
+::selection {
+  background: #dce9fb;
+  color: #0a2e6e;
+}
+
+:focus-visible {
+  outline: 2px solid #1565d8;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   02. VARIÁVEIS DE COR E TIPOGRAFIA
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Paleta da marca */
+  --azul-marinho: #0a2e6e;
+  --azul-marinho-escuro: #061e4b;
+  --azul-acao: #1565d8;
+  --azul-suave: #dce9fb;
+  --azul-fundo: #f4f8fe;
+  --azul-borda: #d6e4fa;
+
+  /* Texto */
+  --texto-titulo: #0a2e6e;
+  --texto-corpo: #52627a;
+  --texto-secundario: #5a6b85;
+
+  /* Extras */
+  --verde-whatsapp: #25d366;
+  --verde-whatsapp-texto: #138a44;
+  --branco: #ffffff;
+
+  /* Espaçamentos e raio */
+  --raio-card: 22px;
+  --raio-botao: 999px;
+  --sombra-card: 0 8px 30px rgba(10, 46, 110, 0.07);
+  --sombra-card-hover: 0 20px 45px rgba(10, 46, 110, 0.14);
+}
+
+/* Títulos padrão */
+h1,
+h2,
+h3,
+h4 {
+  color: var(--texto-titulo);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  font-size: 2.6rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.35rem;
+}
+
+p {
+  color: var(--texto-corpo);
+}
+
+/* --------------------------------------------------------------------------
+   03. UTILITÁRIOS DE LAYOUT
+   -------------------------------------------------------------------------- */
+
+/* Container central com largura máxima, igual ao "page-shell" do site */
+.page-shell {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+/* Espaçamento vertical padrão de seção */
+.section-space {
+  padding-block: 64px;
+}
+
+/* Card suave com sombra azulada */
+.soft-card {
+  background: var(--branco);
+  border: 1px solid var(--azul-borda);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
+}
+
+/* Texto pequeno em caixa alta que antecede títulos (eyebrow) */
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--azul-acao);
+}
+
+/* --------------------------------------------------------------------------
+   04. BOTÕES
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding-inline: 24px;
+  border-radius: var(--raio-botao);
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-primario {
+  background: var(--azul-acao);
+  color: var(--branco);
+}
+
+.btn-primario:hover {
+  background: #0f56ba;
+}
+
+.btn-claro {
+  background: var(--branco);
+  color: var(--azul-marinho);
+}
+
+.btn-claro:hover {
+  background: #e8f1fd;
+}
+
+.btn-whatsapp {
+  background: var(--verde-whatsapp);
+  color: #06371b;
+}
+
+.btn-whatsapp:hover {
+  background: #20bd5b;
+}
+
+/* --------------------------------------------------------------------------
+   05. HEADER E NAVEGAÇÃO
+   -------------------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--azul-borda);
+  transition: box-shadow 0.25s ease;
+}
+
+/* Estado "encolhido" ativado por JS quando a página rola */
+.site-header.rolou {
+  box-shadow: 0 6px 24px rgba(10, 46, 110, 0.1);
+}
+
+.header-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 84px;
+}
+
+/* Logo: emblema octogonal + wordmark */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand svg {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.brand-nome {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--texto-titulo);
+  line-height: 1;
+}
+
+.brand-tagline {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.44rem;
+  font-weight: 700;
+  letter-spacing: 0.31em;
+  color: var(--azul-acao);
+  line-height: 1;
+}
+
+/* Navegação principal */
+.menu-principal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.menu-principal a {
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: var(--texto-corpo);
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.menu-principal a:hover,
+.menu-principal a.atual {
+  color: var(--azul-acao);
+  background: var(--azul-suave);
+}
+
+/* Botão hambúrguer (visível só no mobile) */
+.botao-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 1px solid var(--azul-borda);
+  border-radius: 10px;
+  background: var(--branco);
+  cursor: pointer;
+}
+
+.botao-menu span {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--azul-marinho);
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+/* Transformação do hambúrguer em X quando o menu abre */
+.botao-menu.aberto span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.botao-menu.aberto span:nth-child(2) {
+  opacity: 0;
+}
+.botao-menu.aberto span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --------------------------------------------------------------------------
+   06. HERO / BANNERS DE PÁGINA
+   -------------------------------------------------------------------------- */
+
+/* Hero da home: grande, com fundo azul e brilho de escudo */
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: var(--branco);
+  background:
+    radial-gradient(1000px 500px at 85% 0%, rgba(21, 101, 216, 0.35), transparent 70%),
+    linear-gradient(115deg, #061e4b 0%, #0a2e6e 55%, #0d3a86 100%);
+  padding-block: 110px 120px;
+}
+
+.hero h1 {
+  color: var(--branco);
+  font-size: 3.4rem;
+  line-height: 1.08;
+  max-width: 720px;
+}
+
+.hero .hero-texto {
+  margin-top: 24px;
+  max-width: 620px;
+  font-size: 1.1rem;
+  color: #cfe0f8;
+}
+
+.hero .acoes {
+  margin-top: 36px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* Selos exibidos abaixo das ações do hero */
+.hero-selos {
+  margin-top: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--raio-botao);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #d8e7fc;
+}
+
+/* Faixa azul de destaque no hero (home) */
+.hero-faixa {
+  margin-top: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.hero-faixa strong {
+  color: var(--branco);
+}
+
+/* Banner de topo das páginas internas */
+.hero-pagina {
+  position: relative;
+  overflow: hidden;
+  color: var(--branco);
+  background:
+    radial-gradient(900px 420px at 80% 10%, rgba(21, 101, 216, 0.3), transparent 70%),
+    linear-gradient(115deg, #061e4b 0%, #0a2e6e 60%, #0d3a86 100%);
+  padding-block: 96px;
+}
+
+.hero-pagina h1 {
+  color: var(--branco);
+  font-size: 2.6rem;
+}
+
+.hero-pagina .hero-texto {
+  margin-top: 18px;
+  max-width: 640px;
+  font-size: 1.05rem;
+  color: #cfe0f8;
+}
+
+/* Placeholder de imagem: bloco com gradiente azul, sem base64 */
+.placeholder-imagem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0d3a86 0%, #1565d8 60%, #4b93ec 100%);
+}
+
+.placeholder-imagem::after {
+  content: attr(data-legenda);
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   07. SEÇÕES COMUNS
+   -------------------------------------------------------------------------- */
+
+/* Cabeçalho de seção centralizado */
+.secao-cabecalho {
+  max-width: 720px;
+  margin-inline: auto;
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.secao-cabecalho p {
+  margin-top: 14px;
+  color: var(--texto-secundario);
+}
+
+/* Fundo alternado das seções */
+.fundo-azul-suave {
+  background: var(--azul-fundo);
+}
+.fundo-branco {
+  background: var(--branco);
+}
+.fundo-azul-marinho {
+  background: linear-gradient(135deg, #061e4b, #0a2e6e);
+  color: var(--branco);
+}
+
+.fundo-azul-marinho h2,
+.fundo-azul-marinho h3 {
+  color: var(--branco);
+}
+
+/* Lista com marcador de bolinha azul */
+.lista-checada li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: #34445e;
+  line-height: 1.7;
+}
+
+.lista-checada li::before {
+  content: '';
+  flex-shrink: 0;
+  margin-top: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--azul-acao);
+}
+
+/* Acordeão de FAQ — conteúdo aberto/fechado controlado pelo JS */
+.faq-item {
+  background: var(--branco);
+  border: 1px solid var(--azul-borda);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.faq-pergunta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 22px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--texto-titulo);
+  text-align: left;
+  cursor: pointer;
+}
+
+.faq-pergunta .icone {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--azul-suave);
+  color: var(--azul-acao);
+  font-size: 1.1rem;
+  transition: transform 0.25s ease;
+}
+
+.faq-item.aberto .faq-pergunta .icone {
+  transform: rotate(45deg);
+}
+
+.faq-resposta {
+  display: none;
+  padding: 0 22px 20px;
+  color: var(--texto-secundario);
+  line-height: 1.7;
+}
+
+.faq-item.aberto .faq-resposta {
+  display: block;
+}
+
+/* Bloco de CTA final (fundo azul-marinho, título e botões) */
+.cta-bloco {
+  display: grid;
+  gap: 32px;
+  align-items: center;
+  padding: 48px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #0a2e6e, #0d3a86);
+  color: var(--branco);
+}
+
+.cta-bloco h2 {
+  color: var(--branco);
+}
+
+.cta-bloco p {
+  margin-top: 14px;
+  color: #cfe0f8;
+}
+
+.cta-bloco .acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* Grade para cards em duas/três colunas */
+.grade {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 720px) {
+  .grade-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grade-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grade-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   08. CARDS DE SEGURO
+   -------------------------------------------------------------------------- */
+
+.card-seguro {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--azul-borda);
+  border-radius: var(--raio-card);
+  background: var(--branco);
+  box-shadow: var(--sombra-card);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card-seguro:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--sombra-card-hover);
+}
+
+.card-seguro .capa {
+  position: relative;
+  height: 190px;
+}
+
+.card-seguro .capa .icone {
+  position: absolute;
+  left: 20px;
+  bottom: 16px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--branco);
+  color: var(--azul-acao);
+  font-size: 1.2rem;
+  box-shadow: 0 10px 20px rgba(10, 46, 110, 0.2);
+}
+
+.card-seguro .conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  padding: 24px;
+}
+
+.card-seguro h3 {
+  font-size: 1.25rem;
+}
+
+.card-seguro p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.card-seguro .link {
+  margin-top: auto;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--azul-acao);
+}
+
+.card-seguro:hover .link {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   09. DEPOIMENTOS / CARROSSEL
+   -------------------------------------------------------------------------- */
+
+.carrossel {
+  position: relative;
+  overflow: hidden;
+}
+
+.carrossel-trilha {
+  display: flex;
+  transition: transform 0.45s ease;
+}
+
+.carrossel-slide {
+  flex: 0 0 100%;
+  padding: 4px;
+}
+
+.depoimento-card {
+  padding: 32px;
+  border-radius: var(--raio-card);
+  background: var(--branco);
+  border: 1px solid var(--azul-borda);
+  box-shadow: var(--sombra-card);
+  text-align: center;
+}
+
+.depoimento-citacao {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #34445e;
+}
+
+.depoimento-citacao::before,
+.depoimento-citacao::after {
+  content: '“';
+  color: var(--azul-acao);
+  font-size: 1.3em;
+  font-weight: 800;
+}
+
+.depoimento-citacao::after {
+  content: '”';
+}
+
+.depoimento-autor {
+  margin-top: 20px;
+  font-weight: 700;
+  color: var(--texto-titulo);
+}
+
+.depoimento-detalhe {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+}
+
+.carrossel-controles {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.carrossel-botao {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--azul-borda);
+  border-radius: 50%;
+  background: var(--branco);
+  color: var(--azul-acao);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.carrossel-botao:hover {
+  background: var(--azul-suave);
+}
+
+.carrossel-pontos {
+  display: flex;
+  gap: 8px;
+}
+
+.carrossel-ponto {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--azul-borda);
+  cursor: pointer;
+}
+
+.carrossel-ponto.ativo {
+  background: var(--azul-acao);
+}
+
+/* --------------------------------------------------------------------------
+   10. FORMULÁRIO DE COTAÇÃO
+   -------------------------------------------------------------------------- */
+
+.form-cotacao {
+  display: grid;
+  gap: 18px;
+}
+
+.form-campo {
+  display: grid;
+  gap: 8px;
+}
+
+.form-campo label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--texto-titulo);
+}
+
+.form-campo .necessario {
+  color: #d64545;
+}
+
+.form-campo input,
+.form-campo select,
+.form-campo textarea {
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--azul-borda);
+  border-radius: 12px;
+  background: var(--branco);
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--texto-corpo);
+}
+
+.form-campo textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-campo input:focus,
+.form-campo select:focus,
+.form-campo textarea:focus {
+  outline: 2px solid var(--azul-acao);
+  outline-offset: 0;
+  border-color: var(--azul-acao);
+}
+
+.form-campo .erro {
+  display: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #d64545;
+}
+
+/* Campo inválido: borda vermelha e mensagem visível */
+.form-campo.invalido input,
+.form-campo.invalido select,
+.form-campo.invalido textarea {
+  border-color: #d64545;
+}
+
+.form-campo.invalido .erro {
+  display: block;
+}
+
+/* Termo de consentimento (checkbox com link para a política) */
+.consentimento {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+}
+
+.consentimento input {
+  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Mensagem de confirmação local, exibida pelo JS após o envio */
+.form-mensagem {
+  display: none;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: #e5f7ea;
+  border: 1px solid #b7e6c6;
+  color: #138a44;
+  font-weight: 600;
+}
+
+.form-mensagem.visivel {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   11. PÁGINA DE CONTATO
+   -------------------------------------------------------------------------- */
+
+.contato-grade {
+  display: grid;
+  gap: 24px;
+}
+
+.contato-cartao {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 24px;
+  background: var(--branco);
+  border: 1px solid var(--azul-borda);
+  border-radius: 18px;
+  box-shadow: var(--sombra-card);
+}
+
+.contato-cartao .icone {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--azul-suave);
+  color: var(--azul-acao);
+  font-size: 1.15rem;
+}
+
+.contato-cartao strong {
+  display: block;
+  color: var(--texto-titulo);
+}
+
+.contato-cartao span {
+  font-size: 0.92rem;
+  color: var(--texto-secundario);
+}
+
+/* --------------------------------------------------------------------------
+   12. ARTIGOS DO BLOG
+   -------------------------------------------------------------------------- */
+
+.card-post {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--azul-borda);
+  border-radius: var(--raio-card);
+  background: var(--branco);
+  box-shadow: var(--sombra-card);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card-post:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--sombra-card-hover);
+}
+
+.card-post .capa {
+  height: 170px;
+}
+
+.card-post .conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  padding: 24px;
+}
+
+.card-post .categoria {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border-radius: var(--raio-botao);
+  background: var(--azul-suave);
+  color: var(--azul-acao);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.card-post h3 {
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.card-post .meta {
+  font-size: 0.82rem;
+  color: var(--texto-secundario);
+}
+
+/* Artigo individual */
+.artigo-corpo {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.artigo-corpo h2 {
+  margin-top: 40px;
+  font-size: 1.6rem;
+}
+
+.artigo-corpo p {
+  margin-top: 16px;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #52627a;
+}
+
+.artigo-corpo .lista-checada {
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--azul-fundo);
+}
+
+/* --------------------------------------------------------------------------
+   13. RODAPÉ
+   -------------------------------------------------------------------------- */
+
+.site-footer {
+  background: linear-gradient(135deg, #061e4b, #0a2e6e);
+  color: #cfe0f8;
+}
+
+.footer-conteudo {
+  display: grid;
+  gap: 40px;
+  padding-block: 64px;
+}
+
+@media (min-width: 900px) {
+  .footer-conteudo {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+.site-footer .brand-nome {
+  color: var(--branco);
+}
+.site-footer .brand-tagline {
+  color: #9dc2f5;
+}
+
+.site-footer .sobre {
+  margin-top: 18px;
+  max-width: 380px;
+  font-size: 0.92rem;
+  line-height: 1.8;
+}
+
+.site-footer h3 {
+  margin-bottom: 16px;
+  color: var(--branco);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.site-footer ul li + li {
+  margin-top: 10px;
+}
+
+.site-footer a {
+  color: #cfe0f8;
+  font-size: 0.92rem;
+}
+
+.site-footer a:hover {
+  color: var(--branco);
+  text-decoration: underline;
+}
+
+/* Faixa final com copyright e botão de download */
+.footer-faixa {
+  padding-block: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.footer-faixa .linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+}
+
+/* --------------------------------------------------------------------------
+   14. BOTÃO FLUTUANTE DE WHATSAPP
+   -------------------------------------------------------------------------- */
+
+.whatsapp-flutuante {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: var(--raio-botao);
+  background: var(--verde-whatsapp);
+  color: #06371b;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.38);
+  animation: flutuar 2.5s ease-in-out infinite;
+}
+
+.whatsapp-flutuante:hover {
+  background: #20bd5b;
+}
+
+.whatsapp-flutuante svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* Texto do botão escondido em telas muito estreitas */
+@media (max-width: 480px) {
+  .whatsapp-flutuante span {
+    display: none;
+  }
+  .whatsapp-flutuante {
+    padding: 14px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   15. ANIMAÇÕES
+   -------------------------------------------------------------------------- */
+
+@keyframes flutuar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aparecer {
+  animation: aparecer 0.75s ease-out both;
+}
+
+/* Acessibilidade: desliga animações se o usuário preferir */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. RESPONSIVO (MEDIA QUERIES)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  /* Menu hambúrguer no lugar da navegação horizontal */
+  .botao-menu {
+    display: flex;
+  }
+
+  .menu-principal {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 16px 20px 24px;
+    background: var(--branco);
+    border-bottom: 1px solid var(--azul-borda);
+    box-shadow: 0 24px 40px rgba(10, 46, 110, 0.12);
+  }
+
+  .menu-principal.aberto {
+    display: flex;
+  }
+  .menu-principal a {
+    padding: 14px 16px;
+    font-size: 1rem;
+  }
+
+  .hero {
+    padding-block: 80px 90px;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+  }
+  .hero-pagina {
+    padding-block: 72px;
+  }
+  .hero-pagina h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  .cta-bloco {
+    padding: 32px;
+  }
+  .footer-conteudo {
+    padding-block: 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-space {
+    padding-block: 48px;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  .hero h1 {
+    font-size: 2.1rem;
+  }
+  .depoimento-card {
+    padding: 24px;
+  }
+  .grade {
+    gap: 18px;
+  }
+}
