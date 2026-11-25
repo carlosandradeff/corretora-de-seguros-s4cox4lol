@@ -58,7 +58,16 @@ export default function Layout() {
       >
         <div className="page-shell flex items-center justify-between gap-5">
           <Link to="/" aria-label="Stop Seguros — página inicial">
-            <BrandLogo inverse={!headerSolid} />
+            <img
+              src="/logo-azul.svg"
+              alt="Stop Seguros"
+              width={200}
+              height={48}
+              className={cn(
+                'h-12 w-auto transition-opacity duration-300',
+                !headerSolid && 'opacity-0',
+              )}
+            />
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Navegação principal">
@@ -206,7 +215,15 @@ export default function Layout() {
       <footer className="bg-[#061E4B] text-blue-100">
         <div className="page-shell grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-12 lg:py-20">
           <div className="sm:col-span-2 lg:col-span-4 lg:pr-10">
-            <BrandLogo inverse />
+            <Link to="/" aria-label="Stop Seguros — página inicial">
+              <img
+                src="/logo-branco.svg"
+                alt="Stop Seguros"
+                width={200}
+                height={48}
+                className="h-12 w-auto"
+              />
+            </Link>
             <p className="mt-6 max-w-sm text-sm leading-7 text-blue-200">
               Proteção não precisa ser complicada. A Stop Seguros compara opções, explica cada
               detalhe e acompanha você antes, durante e depois da contratação.
