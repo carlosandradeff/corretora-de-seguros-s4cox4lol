@@ -13,7 +13,6 @@
    ========================================================================== */
 
 'use strict'
-
 /* --------------------------------------------------------------------------
    1. MENU HAMBÚRGUER (MOBILE)
    O botão .botao-menu alterna a classe .aberto no próprio botão (vira um X)
